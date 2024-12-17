@@ -2,6 +2,7 @@ package br.com.microservices.orchestrated.productvalidationservice.config.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -9,6 +10,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
@@ -19,6 +21,10 @@ import java.util.Map;
 @Getter
 public class KafkaConfig {
 
+    private static final Integer PARTITIONS_COUNT = 1;
+
+    private static final Integer REPLICAS_COUNT = 1;
+
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
@@ -27,6 +33,15 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
+    @Value("${spring.kafka.topic.orchestrator}")
+    private String orchestratorTopic;
+
+    @Value("${spring.kafka.topic.product-validation-success}")
+    private String productValidationSuccessTopic;
+
+    @Value("${spring.kafka.topic.product-validation-fail}")
+    private String productValidationFailTopic;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -59,6 +74,29 @@ public class KafkaConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    private NewTopic buildTopic(String name) {
+        return TopicBuilder
+                .name(name)
+                .replicas(REPLICAS_COUNT)
+                .partitions(PARTITIONS_COUNT)
+                .build();
+    }
+
+    @Bean
+    public NewTopic orchestrator() {
+        return buildTopic(orchestratorTopic);
+    }
+
+    @Bean
+    public NewTopic productValidationSuccess() {
+        return buildTopic(productValidationSuccessTopic);
+    }
+
+    @Bean
+    public NewTopic productValidationFail() {
+        return buildTopic(productValidationFailTopic);
     }
 
 }
