@@ -6,7 +6,9 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
     topic:
-      teste: teste
+      orchestrator: orchestrator
+      inventory-validation-success: payment-validation-success
+      inventory-validation-fail: payment-validation-fail
     consumer:
       group-id: inventory-group
       auto-offset-reset: latest
