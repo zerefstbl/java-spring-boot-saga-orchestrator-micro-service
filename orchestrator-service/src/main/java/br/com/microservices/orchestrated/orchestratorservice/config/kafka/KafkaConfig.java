@@ -1,23 +1,34 @@
 package br.com.microservices.orchestrated.orchestratorservice.config.kafka;
 
+import br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.*;
+
 @EnableKafka
-@AllArgsConstructor
-@Getter
+@Configuration
+@RequiredArgsConstructor
 public class KafkaConfig {
+
+    private static final Integer PARTITIONS_COUNT = 1;
+
+    private static final Integer REPLICAS_COUNT = 1;
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -60,5 +71,69 @@ public class KafkaConfig {
     public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
+
+    private NewTopic buildTopic(String name) {
+        return TopicBuilder
+                .name(name)
+                .replicas(REPLICAS_COUNT)
+                .partitions(PARTITIONS_COUNT)
+                .build();
+    }
+
+    @Bean
+    public NewTopic startSaga() {
+        return buildTopic(START_SAGA.getTopic());
+    }
+
+    @Bean
+    public NewTopic finishSuccess() {
+        return buildTopic(FINISH_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic finishFail() {
+        return buildTopic(FINISH_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic notifyEnding() {
+        return buildTopic(NOTIFY_ENDING.getTopic());
+    }
+
+    @Bean
+    public NewTopic paymentSuccess() {
+        return buildTopic(PAYMENT_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic paymentFail() {
+        return buildTopic(PAYMENT_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic productValidationSuccess() {
+        return buildTopic(PRODUCT_VALIDATION_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic productValidationFail() {
+        return buildTopic(PRODUCT_VALIDATION_FAIL.getTopic());
+    }
+
+    @Bean
+    public NewTopic orchestrator() {
+        return buildTopic(BASE_ORCHESTRATOR.getTopic());
+    }
+
+    @Bean
+    public NewTopic inventorySuccess() {
+        return buildTopic(INVENTORY_SUCCESS.getTopic());
+    }
+
+    @Bean
+    public NewTopic inventoryFail() {
+        return buildTopic(INVENTORY_FAIL.getTopic());
+    }
+
 
 }

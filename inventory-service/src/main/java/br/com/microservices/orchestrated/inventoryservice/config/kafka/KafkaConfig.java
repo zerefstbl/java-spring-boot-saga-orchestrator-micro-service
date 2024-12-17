@@ -2,6 +2,7 @@ package br.com.microservices.orchestrated.inventoryservice.config.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -9,6 +10,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
@@ -17,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EnableKafka
-@AllArgsConstructor
-@Getter
+@Configuration
+@RequiredArgsConstructor
 public class KafkaConfig {
 
     private static final Integer PARTITIONS_COUNT = 1;
@@ -37,11 +39,11 @@ public class KafkaConfig {
     @Value("${spring.kafka.topic.orchestrator}")
     private String orchestratorTopic;
 
-    @Value("${spring.kafka.topic.inventory-validation-success}")
-    private String inventoryValidationSuccessTopic;
+    @Value("${spring.kafka.topic.inventory-success}")
+    private String inventorySuccessTopic;
 
-    @Value("${spring.kafka.topic.inventory-validation-fail}")
-    private String inventoryValidationFailTopic;
+    @Value("${spring.kafka.topic.inventory-fail}")
+    private String inventoryFailTopic;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -90,13 +92,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic inventoryValidationSuccess() {
-        return buildTopic(inventoryValidationSuccessTopic);
+    public NewTopic inventorySuccess() {
+        return buildTopic(inventorySuccessTopic);
     }
 
     @Bean
-    public NewTopic inventoryValidationFail() {
-        return buildTopic(inventoryValidationFailTopic);
+    public NewTopic inventoryFail() {
+        return buildTopic(inventoryFailTopic);
     }
 
 }
