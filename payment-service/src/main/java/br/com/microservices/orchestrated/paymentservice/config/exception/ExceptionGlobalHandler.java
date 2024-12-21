@@ -1,7 +1,5 @@
 package br.com.microservices.orchestrated.paymentservice.config.exception;
 
-import br.com.microservices.orchestrated.orchestratorservice.config.exception.ExceptionDetails;
-import br.com.microservices.orchestrated.orchestratorservice.config.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
